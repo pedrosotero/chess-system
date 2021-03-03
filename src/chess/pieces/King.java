@@ -1,6 +1,10 @@
 package chess.pieces;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import boardgame.Board;
+import boardgame.Piece;
 import boardgame.Position;
 import chess.ChessMatch;
 import chess.ChessPiece;
@@ -30,6 +34,21 @@ public class King extends ChessPiece {
 		return p != null && p instanceof Rook && p.getColor() == getColor() && p.getMoveCount() == 0;
 	}
 
+	private boolean attacked(Position position) {
+		List<Piece> attackerPieces = chessMatch.getPiecesOnTheBoard().stream()
+				.filter(x -> ((ChessPiece) x).getColor() != getColor()).collect(Collectors.toList());
+		
+		for (Piece p : attackerPieces) {
+			boolean[][] mat = p.possibleMoves();
+			
+			if (mat[position.getRow()][position.getColumn()]) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	@Override
 	public boolean[][] possibleMoves() {
 		boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
@@ -57,20 +76,21 @@ public class King extends ChessPiece {
 			if (testRookCastling(posT1)) {
 				Position p1 = new Position(position.getRow(), position.getColumn() + 1);
 				Position p2 = new Position(position.getRow(), position.getColumn() + 2);
-				
-				if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2)) {
+
+				if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2) && !attacked(p1)) {
 					mat[p2.getRow()][p2.getColumn()] = true;
 				}
 			}
-			
+
 			// Roque grande
 			Position posT2 = new Position(position.getRow(), position.getColumn() - 4);
 			if (testRookCastling(posT2)) {
 				Position p1 = new Position(position.getRow(), position.getColumn() - 1);
 				Position p2 = new Position(position.getRow(), position.getColumn() - 2);
 				Position p3 = new Position(position.getRow(), position.getColumn() - 3);
-				
-				if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2) && !getBoard().thereIsAPiece(p3)) {
+
+				if (!getBoard().thereIsAPiece(p1) && !getBoard().thereIsAPiece(p2) && !getBoard().thereIsAPiece(p3)
+						&& !attacked(p1)) {
 					mat[p2.getRow()][p2.getColumn()] = true;
 				}
 			}

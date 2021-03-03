@@ -48,6 +48,10 @@ public class ChessMatch {
 		return checkMate;
 	}
 
+	public List<Piece> getPiecesOnTheBoard() {
+		return piecesOnTheBoard;
+	}
+
 	public ChessPiece[][] getPieces() {
 		ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
 
